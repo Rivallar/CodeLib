@@ -1,0 +1,9 @@
+<div id="search_form">
+	<form action="{% url 'pages:search' %}" method="post">
+		{{ form.search }}
+		{% csrf_token %}
+		{{ form.discipline }}
+		<input type="submit" value="Search!">
+		
+	</form>
+</div>

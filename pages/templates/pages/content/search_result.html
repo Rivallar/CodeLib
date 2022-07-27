@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load pages_tags %}
+{% block title %}Search results{% endblock %}
+{% block content %}
+<div id="content">
+	<h1>Search results of "{{ search_phrase }}":</h1>
+	<hr>
+		{% for item in result %}
+			<div id="discipline_content_plate">
+				{% with item|model_name as class %}
+					<h2><a href="{{ item.get_absolute_url }}">{{ item.title }}</a></h2>
+					{% if class == 'theme' %}
+						<p class="description">{{ item.description|truncatewords:15 }}</p>
+						{% with item.pages.all as pages %}
+							<span class="subcontent_list">Pages:</span>
+							{% for page in pages %}
+								<i><a href="{{ page.get_absolute_url }}">{{ page.title }}</a></i>
+								{% if not forloop.last %},{% endif %}
+							{% endfor %}
+						{% endwith %}
+						<br>
+						{% with item.subthemes.all as subthemes %}
+							<span class="subcontent_list">Subthemes:</span>
+							{% for theme in subthemes %}
+								<i><a href="{{ theme.get_absolute_url }}">{{ theme.title }}</a></i>
+								{% if not forloop.last %},{% endif %}
+							{% endfor %}
+						{% endwith %}
+					{% else %}
+						<div class="page_content">{{ item.headline|markdown }}</div>
+					{% endif %}
+				
+					{% if request.user.is_authenticated %}
+						<ul class="buttons_list">
+							<li><a class="undecorated" href="{% if class == 'theme' %}{% url 'pages:theme_edit' item.pk %}
+								{% else %}{% url 'pages:page_edit' item.pk %}{% endif %}">
+								<img class="small" src="{% static 'images/icons/edit2.png' %}">
+							</a></li>
+							<li><a class="undecorated" href="{% if class == 'theme' %}{% url 'pages:theme_delete' item.pk %}
+								{% else %}{% url 'pages:page_delete' item.pk %}{% endif %}">
+								<img class="small" src="{% static 'images/icons/delete2.png' %}">
+							</a></li>
+						</ul>
+					{% endif %}
+				{% endwith %}
+				
+			</div>
+		{% empty %}
+			<p>No matches!</p>
+		{% endfor %}
+</div>
+{% endblock %}

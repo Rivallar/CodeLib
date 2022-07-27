@@ -1,0 +1,5 @@
+<div id="navigation">
+	<a href="{% url 'pages:disciplines_list' %}">Main</a>/
+	{% for item in nav_list %}<a href="{{ item.get_absolute_url }}">{% if forloop.first %}{{ item|upper }}{% else %}{{ item }}{% endif %}</a>{% if not forloop.last %}/{% endif %}
+	{% endfor %}
+</div>

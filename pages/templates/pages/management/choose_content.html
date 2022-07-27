@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load pages_tags %}
+{% block title %}Add new content{% endblock %}
+{% block content %}
+	<div id="content">
+		<h1>Add new content:</h1>
+		<form action="" method="post">
+			<p><label>Parent:</label>{{ form.parent }}</p>
+			<p><label>Content type:</label>{{ form.content_type }}</p>
+			<br><br>
+			<hr>
+			<p><label>Title:</label>{{ form.title }}</p>
+			<p><label id="content_or_description">Content:</label>{{ form.content }}</p>
+			{% csrf_token %}<br>
+			<p><input type="submit" value="Create"></p>
+		</form>
+	</div>
+	
+	<script>
+		radio = document.getElementById("id_content_type");
+		var page = document.getElementById("id_content_type_0");
+		var content = document.getElementById("id_content");
+		var lbl = document.getElementById("content_or_description");
+		radio.addEventListener("change", function() {
+			if (page.checked) {
+				content.setAttribute("class", "page_content");
+				lbl.textContent = "Content:";
+				}
+			else {
+				content.setAttribute("class", "");
+				lbl.textContent = "Description:";
+				}
+			})
+	</script>
+{% endblock %}

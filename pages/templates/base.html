@@ -1,0 +1,77 @@
+{% load static %}
+{% load pages_tags %}
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>
+		{% block title %}{% endblock %}
+	</title>
+	<link href="{% static 'css/base.css' %}" rel="stylesheet">
+</head>
+<body>
+	<div id="header">
+		<a href="{% url 'pages:disciplines_list' %}" class="logo"><img src="{% static 'images/Logos/logo_grey.PNG' %}"></a>
+		<h2>A way to keep your coding knowledge at the same place.</h2>
+		
+		{% if object %}{% search_field object %}{% navigation object %}{% endif %}
+		<div id="registration">
+			{% if request.user.is_authenticated %}
+				<p>Hello, <em>{{ request.user.username }}</em>!</p>
+				<!-- <a href="{% url 'logout' %}?next={{ request.path }}">Sign out</a> -->
+				<a href="{% url 'logout' %}?next={% if object %}{{ object.get_absolute_url }}{% else %}
+					{% url 'pages:disciplines_list' %}{% endif %}">Sign out</a>
+			{% else %}
+				<p>Hello, stranger!</p>
+				{% with object.get_absolute_url as curr_page %}
+					<a href="{% url 'login' %}?next={{ request.path }}">Sign in</a>
+				{% endwith %}
+			{% endif %}
+		</div>
+	</div>
+	
+
+	<div id='sidebar'>
+		<ul>
+			<h2>{% if section == 'main' %}DISCIPLINES:
+				{% else %}{{ sidebar_title|truncatechars:20 }}:
+				{% endif %}
+			</h2>
+			
+			{% for object in object_list %}
+				{% with object|model_name as class %}
+					<a class="undecorated" href="{{ object.get_absolute_url }}">
+						<li {% if class == 'page' %}class="page"{% endif %}>
+							{{ object|truncatechars:18 }}
+							{% if class != 'page' %}
+								<img src="{% static 'images/icons/down_arrow.png' %}">
+							{% endif %}
+						</li>
+					</a>
+				{% endwith %}
+			{% empty %}
+				<li class="add">No content yet</li>
+			{% endfor %}
+			
+			{% if request.user.is_authenticated %}
+				{% with object|model_name as class %}
+					{% if class != 'page' %}
+						{% if section == 'main' %}
+							<a class="undecorated" href="{% url 'pages:discipline_create' %}">
+								<li class="add"><img src="{% static 'images/icons/small_plus.png' %}"></li>
+							</a>
+						{% else %}
+							<a class="undecorated" href="{% url 'pages:new_content' class_name=class key=object.pk %}">
+								<li class="add"><img src="{% static 'images/icons/small_plus.png' %}"></li>
+							</a>
+						{% endif %}
+					{% endif %}
+				{% endwith %}
+			{% endif %}
+		</ul>
+	</div>
+
+{% block content %}{% endblock %}
+
+</body>
+</html>

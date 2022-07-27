@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Main page{% endblock %}
+{% block content %}
+
+	<div id="content">
+		<ul id="discipline_plates">
+			{% for discipline in object_list %}
+				<a class="undecorated" href="{{ discipline.get_absolute_url }}">
+					<li><img src="{% if discipline.image %}{{ discipline.image.url }}
+						{% else %}{% static 'images/no_image.png' %}{% endif %}">
+						<p>{{ discipline|truncatechars:45 }}</p>
+					</li>
+				</a>
+			{% empty %}
+				No disciplines yet
+			{% endfor %}
+		</ul>
+		
+		{% if request.user.is_authenticated %}
+			<div id="add_new">
+				<a class="undecorated" href="{% url 'pages:discipline_create' %}">
+					<img src="{% static 'images/icons/plus.png' %}">
+					<p><i>Add new discipline</i></p>
+				</a>	
+			</div>
+		{% endif %}
+	</div>
+	
+{% endblock %}

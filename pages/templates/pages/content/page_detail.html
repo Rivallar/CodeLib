@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load pages_tags %}
+{% block title %}{{ page|truncatechars:15 }}{% endblock %}
+{% block content %}
+	<div id="content">
+		<div class="discipline_description">
+			<h1>{{ page }} content:</h1>
+			{% if request.user.is_authenticated %}
+				<ul class="buttons_list">
+					<li><a class="undecorated" href="{% url 'pages:page_edit' page.pk %}">
+							<img src="{% static 'images/icons/edit_button.png' %}">
+						</a>
+					</li>
+					<li><a class="undecorated" href="{% url 'pages:page_delete' page.pk %}">
+							<img src="{% static 'images/icons/delete_button.png' %}">
+						</a>
+					</li>
+				</ul>
+			{% endif %}
+			<hr>
+		</div>
+		
+		{{ page.content|markdown|truncatewords_html:30 }}
+		
+	</div>
+
+{% endblock %}
