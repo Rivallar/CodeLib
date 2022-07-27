@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank, SearchHeadline
+#from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank, SearchHeadline
 from django.views.decorators.http import require_POST
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
@@ -218,27 +218,18 @@ class PagesLogin(LoginView):
 	object_list = Discipline.objects.all()
 	extra_context = {'object_list': object_list, 'section': 'main'}
 
+
 @require_POST
 def search_content(request):
 	form = SearchForm(request.POST)
 	if form.is_valid():
 		cd = form.cleaned_data
-		query = SearchQuery(f"{cd['search']}:*", search_type="raw")
-		
-		page_vector = SearchVector('title', weight='A') + SearchVector('content', weight='B')
-		page_headline = SearchHeadline('content', query, start_sel='<span class="highlight">', stop_sel='</span>')
-		
-		theme_vector = SearchVector('title', weight='A') + SearchVector('description', weight='C')
-		#theme_headline = SearchHeadline('description', query, start_sel='<span class="highlight">', stop_sel='</span>')
-		
-		result = list(Theme.objects.filter(discipline_parent=cd['discipline']). \
-			annotate(rank=SearchRank(theme_vector, query)). \
-			filter(rank__gte=0.001).order_by('-rank'))
-		result += list(Page.objects.filter(discipline_parent=cd['discipline']). \
-			annotate(rank=SearchRank(page_vector, query)).annotate(headline=page_headline). \
-			filter(rank__gte=0.001).order_by('-rank'))
-		result.sort(key=lambda x: x.rank, reverse=True)
-		
+		query = cd['search']
+		all_themes = Theme.objects.filter(discipline_parent=cd['discipline'])
+		all_pages = Page.objects.filter(discipline_parent=cd['discipline'])
+		result = set(all_themes.filter(title__icontains=query)) | set(all_themes.filter(description__icontains=query)) | \
+			set(all_pages.filter(title__icontains=query)) | set(all_pages.filter(content__icontains=query))
+
 		
 		discipline = Discipline.objects.get(title=cd['discipline'])
 		content = list(discipline.themes.all()) + list(discipline.pages.all())
@@ -246,4 +237,3 @@ def search_content(request):
 		
 	return render(request, 'pages/content/search_result.html', {'result': result,
 		'object_list': content, 'sidebar_title': discipline.title, 'object': discipline, 'search_phrase': cd['search']})
-		

@@ -34,7 +34,7 @@ class Page(models.Model):
 		while True:
 			path_list.insert(0, x.title.lower())
 			if x._meta.model_name == 'discipline':
-				self.discipline_title = x.title
+				self.discipline_parent = x.title
 				path_list[0] = path_list[0].upper()
 				break
 			else:

@@ -28,7 +28,7 @@
 							{% endfor %}
 						{% endwith %}
 					{% else %}
-						<div class="page_content">{{ item.headline|markdown }}</div>
+						<div class="page_content">{{ item.content|markdown|truncatewords:15 }}</div>
 					{% endif %}
 				
 					{% if request.user.is_authenticated %}
