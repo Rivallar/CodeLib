@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 from pathlib import Path
 import os
 
+from .security import S_SECRET_KEY, S_DB_PASSWORD
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -21,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-pva8-99*0=k$#kej7036mtzxmoo4$e0-5b=oist5lbd0zv(swa'
+SECRET_KEY = S_SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -77,11 +79,20 @@ WSGI_APPLICATION = 'codelib.wsgi.application'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
+	'default': {
+		'ENGINE': 'django.db.backends.mysql',
+		'NAME': 'codelib-app-db',
+		'USER': 'root',
+		'PASSWORD': S_DB_PASSWORD,
+		'HOST': 'db',
+		'PORT': 3306,
+		'OPTIONS': {
+			'sql_mode': 'traditional',
+			'charset': 'utf8mb4'
+			}
+		}
+	}
+
 
 
 # Password validation

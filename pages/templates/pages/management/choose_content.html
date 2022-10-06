@@ -10,7 +10,12 @@
 			<p><label>Content type:</label>{{ form.content_type }}</p>
 			<br><br>
 			<hr>
-			<p><label>Title:</label>{{ form.title }}</p>
+			<p><label>Title:</label>{{ form.title }}
+
+					{% for error in form.title.errors %}
+						<span style="color: red;"> {{ error }}</span>
+					{% endfor %}
+
 			<p><label id="content_or_description">Content:</label>{{ form.content }}</p>
 			{% csrf_token %}<br>
 			<p><input type="submit" value="Create"></p>
@@ -22,7 +27,8 @@
 		var page = document.getElementById("id_content_type_0");
 		var content = document.getElementById("id_content");
 		var lbl = document.getElementById("content_or_description");
-		radio.addEventListener("change", function() {
+
+		function page_or_theme() {
 			if (page.checked) {
 				content.setAttribute("class", "page_content");
 				lbl.textContent = "Content:";
@@ -31,6 +37,9 @@
 				content.setAttribute("class", "");
 				lbl.textContent = "Description:";
 				}
-			})
+			}
+
+		page_or_theme();
+		radio.addEventListener("change", page_or_theme);
 	</script>
 {% endblock %}

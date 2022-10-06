@@ -10,7 +10,7 @@ from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.urls import reverse_lazy
 from .models import Discipline, Theme, Page, GeneralContent
-from .forms import CreateDisciplineForm, CreatePageForm, ContentTypeForm, ContentTypeForm2, SearchForm
+from .forms import CreatePageForm, ContentTypeForm, SearchForm
 
 # Create your views here.
 class DisciplinesView(ListView):
@@ -36,7 +36,8 @@ class DisciplineDetailView(DetailView):
 
 class DisciplineCreationView(LoginRequiredMixin, CreateView):
 	template_name = 'pages/management/discipline_create.html'
-	form_class = CreateDisciplineForm
+	model = Discipline
+	fields = ('title', 'description', 'image')
 	success_url = reverse_lazy('pages:disciplines_list')
 	
 	def get_context_data(self, **kwargs):
@@ -47,7 +48,7 @@ class DisciplineCreationView(LoginRequiredMixin, CreateView):
 		
 class DisciplineEditView(LoginRequiredMixin, UpdateView):
 	model = Discipline
-	fields = ['title', 'description', 'image']
+	fields = ('title', 'description', 'image')
 	template_name = 'pages/management/edit.html'
 	
 	def get_context_data(self, **kwargs):
@@ -183,22 +184,20 @@ def add_new_content(request, class_name, key):
 	discipline_name = path.split('/')[0]
 	
 	if request.method == 'POST':
-		form = ContentTypeForm2(request.POST)
+		form = ContentTypeForm(discipline_name, request.POST)
+
 		if form.is_valid():
-
 			cd = form.cleaned_data
-
-			if len(cd['parent'].split('/')) == 1:	#parent is discipline
+			if len(cd['parent'].path.split('/')) == 1:	#parent is discipline
 				content_type = ContentType.objects.get(model='discipline')
-				object_id = GeneralContent.objects.get(path=cd['parent']).discipline.pk
+				object_id = cd['parent'].discipline.pk
 			else:
 				content_type = ContentType.objects.get(model='theme')
-				object_id = GeneralContent.objects.get(path=cd['parent']).theme.pk
+				object_id = cd['parent'].theme.pk
 			
 			if cd['content_type'] == 'page':
 				item = Page(title=cd['title'], content=cd['content'],
 					content_type=content_type, object_id=object_id)
-				
 			else:
 				item = Theme(title=cd['title'], description=cd['content'],
 					content_type=content_type, object_id=object_id)
@@ -206,13 +205,17 @@ def add_new_content(request, class_name, key):
 			item.save()	
 			return redirect(item.get_absolute_url())
 
-		return HttpResponse('Form is bad')
-		
+		else:
+			return render(request, 'pages/management/choose_content.html',
+			              {'form': form, 'parent': path, 'object_list': content, 'sidebar_title': sidebar_title,
+			               'object': current_parent})
+
 	else:
-		form = ContentTypeForm(discipline=discipline_name, initial={'parent': path, 'content_type': 'page'})
+		form = ContentTypeForm(discipline=discipline_name, initial={'parent': current_parent.generalcontent_ptr, 'content_type': 'page'})
 		content.sort(key=lambda x: x.title)
 	return render(request, 'pages/management/choose_content.html',
 			{'form': form, 'parent': path, 'object_list': content, 'sidebar_title': sidebar_title, 'object': current_parent})
+
 
 class PagesLogin(LoginView):
 	object_list = Discipline.objects.all()

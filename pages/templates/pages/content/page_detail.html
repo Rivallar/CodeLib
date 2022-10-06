@@ -5,7 +5,7 @@
 {% block content %}
 	<div id="content">
 		<div class="discipline_description">
-			<h1>{{ page }} content:</h1>
+			<h1>{{ page }}:</h1>
 			{% if request.user.is_authenticated %}
 				<ul class="buttons_list">
 					<li><a class="undecorated" href="{% url 'pages:page_edit' page.pk %}">
@@ -21,7 +21,15 @@
 			<hr>
 		</div>
 		
-		{{ page.content|markdown|truncatewords_html:30 }}
+		{{ page.content|markdown }}
+		{% if request.user.is_authenticated %}
+			<div id="add_new">
+				<a class="undecorated" href="{% url 'pages:page_edit' page.pk %}">
+					<img src="{% static 'images/icons/edit_button.png' %}">
+					<p><i>Edit page</i></p>
+				</a>
+			</div>
+		{% endif %}
 		
 	</div>
 

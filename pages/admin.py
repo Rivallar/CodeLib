@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Discipline, Theme, Page
+from .models import Discipline, Theme, Page, GeneralContent
 
 # Register your models here.
 @admin.register(Discipline)
@@ -25,6 +25,10 @@ class PageAdmin(admin.ModelAdmin):
 	prepopulated_fields = {'slug': ('title',)}
 	date_hierarchy = 'created'
 	ordering = ('title',)
+
+@admin.register(GeneralContent)
+class GeneralContentAdmin(admin.ModelAdmin):
+	list_display = ('path', )
 
 
 

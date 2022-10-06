@@ -5,7 +5,7 @@
 {% block content %}
 	<div id="content">
 		<div class="discipline_description">
-			<h1>{{ object }} content:</h1>
+			<h1>{{ object }}:</h1>
 			{% if object.description %}
 				<p><i>{{ object.description|linebreaks }}</i></p>
 			{% else %}<br><br>
@@ -45,7 +45,7 @@
 							{% endfor %}
 						{% endwith %}
 					{% else %}
-						<div class="page_content">{{ item.content|markdown|truncatewords:15 }}</div>
+						<div class="page_content">{{ item.content|markdown|truncatechars_html:400 }}</div>
 					{% endif %}
 				
 					{% if request.user.is_authenticated %}

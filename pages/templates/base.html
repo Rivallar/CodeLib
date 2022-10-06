@@ -8,6 +8,9 @@
 		{% block title %}{% endblock %}
 	</title>
 	<link href="{% static 'css/base.css' %}" rel="stylesheet">
+	<link href="{% static 'css/content.css' %}" rel="stylesheet">
+	<link href="{% static 'css/forms.css' %}" rel="stylesheet">
+	<link rel="shortcut icon" type="image/png" href="{% static 'images/icons/favicon.png' %}"/>
 </head>
 <body>
 	<div id="header">
@@ -42,7 +45,7 @@
 				{% with object|model_name as class %}
 					<a class="undecorated" href="{{ object.get_absolute_url }}">
 						<li {% if class == 'page' %}class="page"{% endif %}>
-							{{ object|truncatechars:18 }}
+							{{ object|truncatechars:27 }}
 							{% if class != 'page' %}
 								<img src="{% static 'images/icons/down_arrow.png' %}">
 							{% endif %}
@@ -65,6 +68,12 @@
 								<li class="add"><img src="{% static 'images/icons/small_plus.png' %}"></li>
 							</a>
 						{% endif %}
+					{% else %}
+						{% with object.content_object|model_name as parent_class %}
+							<a class="undecorated" href="{% url 'pages:new_content' class_name=parent_class key=object.content_object.pk %}">
+								<li class="add"><img src="{% static 'images/icons/small_plus.png' %}"></li>
+							</a>
+						{% endwith %}
 					{% endif %}
 				{% endwith %}
 			{% endif %}
