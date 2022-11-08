@@ -36,51 +36,50 @@
 
 	<div id='sidebar'>
 		<ul>
-			<h2>{% if section == 'main' %}DISCIPLINES:
-				{% else %}{{ sidebar_title|truncatechars:20 }}:
-				{% endif %}
-			</h2>
-			
-			{% for object in object_list %}
-				{% with object|model_name as class %}
-					<a class="undecorated" href="{{ object.get_absolute_url }}">
-						<li {% if class == 'page' %}class="page"{% endif %}>
-							{{ object|truncatechars:27 }}
-							{% if class != 'page' %}
-								<img src="{% static 'images/icons/down_arrow.png' %}">
-							{% endif %}
-						</li>
-					</a>
-				{% endwith %}
-			{% empty %}
-				<li class="add">No content yet</li>
-			{% endfor %}
-			
+			<h2>{% if sidebar_header %} {{ sidebar_header|truncatechars:20 }}: {% endif %}</h2>
+			{% if sidebar_objects %}
+				{% for object in sidebar_objects %}
+					{% with object|model_name as class %}
+						<a class="undecorated" href="{{ object.get_absolute_url }}">
+							<li {% if class == 'page' %}class="page"{% endif %}>
+								{{ object|truncatechars:27 }}
+								{% if class != 'page' %}
+									<img src="{% static 'images/icons/down_arrow.png' %}">
+								{% endif %}
+							</li>
+						</a>
+					{% endwith %}
+				{% empty %}
+					<li class="add">No content yet</li>
+				{% endfor %}
+			{% endif %}
 			{% if request.user.is_authenticated %}
-				{% with object|model_name as class %}
-					{% if class != 'page' %}
-						{% if section == 'main' %}
-							<a class="undecorated" href="{% url 'pages:discipline_create' %}">
-								<li class="add"><img src="{% static 'images/icons/small_plus.png' %}"></li>
-							</a>
-						{% else %}
+				{% if object %}
+					{% with object|model_name as class %}
+						{% if class != 'page' %}
 							<a class="undecorated" href="{% url 'pages:new_content' class_name=class key=object.pk %}">
 								<li class="add"><img src="{% static 'images/icons/small_plus.png' %}"></li>
 							</a>
+						{% else %}
+							{% with object.content_object|model_name as parent_class %}
+								<a class="undecorated" href="{% url 'pages:new_content' class_name=parent_class key=object.content_object.pk %}">
+									<li class="add"><img src="{% static 'images/icons/small_plus.png' %}"></li>
+								</a>
+							{% endwith %}
 						{% endif %}
-					{% else %}
-						{% with object.content_object|model_name as parent_class %}
-							<a class="undecorated" href="{% url 'pages:new_content' class_name=parent_class key=object.content_object.pk %}">
-								<li class="add"><img src="{% static 'images/icons/small_plus.png' %}"></li>
-							</a>
-						{% endwith %}
-					{% endif %}
-				{% endwith %}
+					{% endwith %}
+				{% else %}
+					<a class="undecorated" href="{% url 'pages:discipline_create' %}">
+						<li class="add"><img src="{% static 'images/icons/small_plus.png' %}"></li>
+					</a>
+				{% endif %}
 			{% endif %}
 		</ul>
 	</div>
 
 {% block content %}{% endblock %}
+
+
 
 </body>
 </html>

@@ -4,7 +4,7 @@ label {
     float:left;
     color:#333;
     margin-bottom:4px;
-    width:10em;
+    width:7em;
     font-size:15px;
     font-weight: bold;
 }
@@ -28,14 +28,14 @@ input, textarea, select {
 }
 
 textarea.page_content {
-	width: 95em;
-	height: 40em;
+	width: 105em;
+	height: 50em;
 }
 
 
 input[type=submit] {
     font-weight:bold;
-    background:#00abff;
+    background:#6ca9c3;
     color:#fff;
     padding:10px 20px;
     font-size:14px;

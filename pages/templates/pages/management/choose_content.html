@@ -21,21 +21,26 @@
 			<p><input type="submit" value="Create"></p>
 		</form>
 	</div>
-	
+
+	{% tag_buttons %}
+
 	<script>
 		radio = document.getElementById("id_content_type");
 		var page = document.getElementById("id_content_type_0");
 		var content = document.getElementById("id_content");
 		var lbl = document.getElementById("content_or_description");
+		var tag_buttons = document.getElementById("tag_buttons");
 
 		function page_or_theme() {
 			if (page.checked) {
 				content.setAttribute("class", "page_content");
 				lbl.textContent = "Content:";
+				tag_buttons.style.display = "block";
 				}
 			else {
 				content.setAttribute("class", "");
 				lbl.textContent = "Description:";
+				tag_buttons.style.display = "none";
 				}
 			}
 

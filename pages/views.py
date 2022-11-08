@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.contenttypes.models import ContentType
-#from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank, SearchHeadline
+# from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank, SearchHeadline
 from django.views.decorators.http import require_POST
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
@@ -12,90 +12,47 @@ from django.urls import reverse_lazy
 from .models import Discipline, Theme, Page, GeneralContent
 from .forms import CreatePageForm, ContentTypeForm, SearchForm
 
+
 # Create your views here.
 class DisciplinesView(ListView):
 	queryset = Discipline.objects.all()
 	template_name = 'pages/content/disciplines_list.html'
-	
-	def get_context_data(self, **kwargs):
-		context = super().get_context_data(**kwargs)
-		context['section'] = 'main'
-		return context
+
 	
 class DisciplineDetailView(DetailView):
 	model = Discipline
 	template_name = 'pages/content/discipline_detail.html'
-	
-	def get_context_data(self, **kwargs):
-		context = super().get_context_data(**kwargs)
-		content = list(self.object.themes.all()) + list(self.object.pages.all())
-		content.sort(key=lambda x: x.title)
-		context['object_list'] = content
-		context['sidebar_title'] = self.object.title
-		return context
+
 
 class DisciplineCreationView(LoginRequiredMixin, CreateView):
 	template_name = 'pages/management/discipline_create.html'
 	model = Discipline
 	fields = ('title', 'description', 'image')
 	success_url = reverse_lazy('pages:disciplines_list')
-	
-	def get_context_data(self, **kwargs):
-		context = super().get_context_data(**kwargs)
-		context['object_list'] = Discipline.objects.all()
-		context['section'] = 'main'
-		return context
+
 		
 class DisciplineEditView(LoginRequiredMixin, UpdateView):
 	model = Discipline
 	fields = ('title', 'description', 'image')
 	template_name = 'pages/management/edit.html'
-	
-	def get_context_data(self, **kwargs):
-		context = super().get_context_data(**kwargs)
-		content = list(self.object.themes.all()) + list(self.object.pages.all())
-		content.sort(key=lambda x: x.title)
-		context['object_list'] = content
-		context['sidebar_title'] = self.object.title
-		return context
+
 		
 class DisciplineDeleteView(LoginRequiredMixin, DeleteView):
 	model = Discipline
 	success_url = reverse_lazy('pages:disciplines_list')
 	template_name = 'pages/management/delete.html'
-	
-	def get_context_data(self, **kwargs):
-		context = super().get_context_data(**kwargs)
-		content = list(self.object.themes.all()) + list(self.object.pages.all())
-		content.sort(key=lambda x: x.title)
-		context['object_list'] = content
-		context['sidebar_title'] = self.object.title
-		return context
+
 		
 class ThemeDetailView(DetailView):
 	model = Theme
 	template_name = 'pages/content/theme_detail.html'
-	
-	def get_context_data(self, **kwargs):
-		context = super().get_context_data(**kwargs)
-		content = list(self.object.subthemes.all()) + list(self.object.pages.all())
-		content.sort(key=lambda x: x.title)
-		context['object_list'] = content
-		context['sidebar_title'] = self.object.title
-		return context
+
 		
 class ThemeEditView(LoginRequiredMixin, UpdateView):
 	model = Theme
 	fields = ['title', 'description']
 	template_name = 'pages/management/edit.html'
-	
-	def get_context_data(self, **kwargs):
-		context = super().get_context_data(**kwargs)
-		content = list(self.object.subthemes.all()) + list(self.object.pages.all())
-		content.sort(key=lambda x: x.title)
-		context['object_list'] = content
-		context['sidebar_title'] = self.object.title
-		return context
+
 		
 class ThemeDeleteView(LoginRequiredMixin, DeleteView):
 	model = Theme
@@ -104,30 +61,12 @@ class ThemeDeleteView(LoginRequiredMixin, DeleteView):
 	def get_success_url(self):
 		parent = self.object.content_object
 		return parent.get_absolute_url()
-	
-	def get_context_data(self, **kwargs):
-		context = super().get_context_data(**kwargs)
-		content = list(self.object.subthemes.all()) + list(self.object.pages.all())
-		content.sort(key=lambda x: x.title)
-		context['object_list'] = content
-		context['sidebar_title'] = self.object.title
-		return context
+
 
 class PageDetailView(DetailView):
 	model = Page
 	template_name = 'pages/content/page_detail.html'
-	
-	def get_context_data(self, **kwargs):
-		context = super().get_context_data(**kwargs)
-		parent = self.object.content_object
-		if parent._meta.model_name == 'discipline':
-			content = list(parent.themes.all()) + list(parent.pages.all())
-		else:
-			content = list(parent.subthemes.all()) + list(parent.pages.all())
-		content.sort(key=lambda x: x.title)
-		context['object_list'] = content
-		context['sidebar_title'] = parent.title
-		return context
+
 
 class PageDeleteView(LoginRequiredMixin, DeleteView):
 	model = Page
@@ -136,39 +75,13 @@ class PageDeleteView(LoginRequiredMixin, DeleteView):
 	def get_success_url(self):
 		parent = self.object.content_object
 		return parent.get_absolute_url()
-	
-	def get_context_data(self, **kwargs):
-		context = super().get_context_data(**kwargs)
-		parent = self.object.content_object
-		if parent._meta.model_name == 'discipline':
-			content = list(parent.themes.all()) + list(parent.pages.all())
 
-		else:
-			content = list(parent.subthemes.all()) + list(parent.pages.all())
-
-		content.sort(key=lambda x: x.title)
-		context['object_list'] = content
-		context['sidebar_title'] = parent.title
-		return context
 		
 class PageEditView(LoginRequiredMixin, UpdateView):
 	model = Page
 	form_class = CreatePageForm
 	template_name = 'pages/management/edit.html'
-	
-	def get_context_data(self, **kwargs):
-		context = super().get_context_data(**kwargs)
-		parent = self.object.content_object
-		if parent._meta.model_name == 'discipline':
-			content = list(parent.themes.all()) + list(parent.pages.all())
 
-		else:
-			content = list(parent.subthemes.all()) + list(parent.pages.all())
-
-		content.sort(key=lambda x: x.title)
-		context['object_list'] = content
-		context['sidebar_title'] = parent.title
-		return context
 
 @login_required
 def add_new_content(request, class_name, key):
@@ -219,7 +132,6 @@ def add_new_content(request, class_name, key):
 
 class PagesLogin(LoginView):
 	object_list = Discipline.objects.all()
-	extra_context = {'object_list': object_list, 'section': 'main'}
 
 
 @require_POST

@@ -2,12 +2,18 @@
 {% load pages_tags %}
 {% block title %}Edit {{ object|model_name }}{% endblock %}
 {% block content %}
-	<h1>Editing {{ object|model_name }} "{{ object }}"</h1>
-	<div id="content">
-		<form action="" method="post" enctype="multipart/form-data">
-			{{ form.as_p }}
-			{% csrf_token %}
-			<input type="submit" class="button" value="Edit">
-		</form>
-	</div>
+	{% with object|model_name as class %}
+		<h1>Editing {{ class }} "{{ object }}"</h1>
+		<div id="content">
+			<form action="" method="post" enctype="multipart/form-data">
+				{{ form.as_p }}
+				{% csrf_token %}
+				<input type="submit" class="button" value="Edit">
+			</form>
+		</div>
+
+		{% if class == 'page' %}
+			{% tag_buttons %}
+		{% endif %}
+	{% endwith %}
 {% endblock %}

@@ -1,0 +1,10 @@
+{% load static %}
+
+{% if scenario == 'new_discipline_big_plus' %}
+    <div id="add_new">
+        <a class="undecorated" href="{% url 'pages:discipline_create' %}">
+            <img src="{% static 'images/icons/plus.png' %}">
+            <p><i>Add new discipline</i></p>
+        </a>
+    </div>
+{% endif %}

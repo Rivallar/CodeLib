@@ -1,0 +1,194 @@
+<div id="tag_buttons">
+	<input type="button" value="<b>" id="b">
+	<input type="button" value="<i>" id="i">
+	<input type="button" value="<br>" id="br">
+	<br>
+	<input type="button" value="<table>" id="table">
+	<input type="button" value="<tr>" id="tr">
+	<input type="button" value="<td>" id="td">
+	<br>
+	<input type="button" value="<pre>" id="pre">
+	<br>
+	<input type="text" value="60" id="shift_value">
+	<input type="button" value="shift" id="shift">
+	<input type="button" value="trim" id="trim">
+</div>
+
+<script>
+	function get_field_and_caret_position() {
+		txt_field = document.getElementById("id_content");
+		txt_field.focus();
+		caret_position = txt_field.selectionStart;
+		return {
+			txt_field: txt_field,
+			caret_position: caret_position
+			}
+		}
+
+
+	function find_last_index(txt_field, tag, caret_position) {
+		return txt_field.value.slice(0, caret_position).lastIndexOf(tag, caret_position);
+		}
+
+
+	function insert_tag(txt_field, tag, caret_position, shift=0) {
+		txt_field.value = txt_field.value.slice(0, caret_position) + tag + txt_field.value.slice(caret_position);
+		txt_field.setSelectionRange(caret_position+tag.length+shift, caret_position+tag.length+shift);
+		}
+
+
+	function make_it_pretty(opener, closer=null) {
+
+		field_caret = get_field_and_caret_position()
+
+		if (closer == null) {
+			insert_tag(field_caret.txt_field, opener, field_caret.caret_position);
+			return;
+			}
+
+		opener_index = find_last_index(field_caret.txt_field, opener, field_caret.caret_position);
+		if (opener_index == -1) {
+			insert_tag(field_caret.txt_field, opener, field_caret.caret_position);
+			}
+		else {
+			closer_index = find_last_index(field_caret.txt_field, closer, field_caret.caret_position);
+			if (closer_index > opener_index) {
+				insert_tag(field_caret.txt_field, opener, field_caret.caret_position);
+				}
+			else {
+				insert_tag(field_caret.txt_field, closer, field_caret.caret_position);
+				}
+			}
+		};
+
+
+	function make_block(tag, shift) {
+		field_caret = get_field_and_caret_position();
+		if (field_caret.caret_position != 0) tag = "\n\n" + tag;
+		insert_tag(field_caret.txt_field, tag, field_caret.caret_position, shift);
+		}
+
+
+	function insert_spaces(tag) {
+		field_caret = get_field_and_caret_position();
+		insert_tag(field_caret.txt_field, tag, field_caret.caret_position);
+		}
+
+
+	function till_border() {
+
+		b_limit = 150;
+		border_field = document.getElementById("shift_value");
+		border = parseInt(border_field.value);
+		if (!(border) || border > b_limit) {
+			border_field.value = "No!";
+			return;
+			}
+
+		field_caret = get_field_and_caret_position();
+		curr_row_start = find_last_index(txt_field, "\n", caret_position) + 1;
+		tags_shift = 0
+
+		pre_open_ind = find_last_index(field_caret.txt_field, "<pre>", field_caret.caret_position);
+		if ((pre_open_ind != -1) && (pre_open_ind > find_last_index(field_caret.txt_field, "</pre>", field_caret.caret_position))) {
+			tags_in_pre = ["<br>", "<b>", "</b>", "<i>", "</i>"]
+			btwn_rowstart_and_caret_str = field_caret.txt_field.value.slice(curr_row_start, field_caret.caret_position);
+			actual_rowlen = btwn_rowstart_and_caret_str.length
+
+			for (var i in tags_in_pre) {
+				btwn_rowstart_and_caret_str = btwn_rowstart_and_caret_str.replaceAll(tags_in_pre[i], '');
+				}
+			tags_shift = actual_rowlen - btwn_rowstart_and_caret_str.length
+			}
+
+		n_of_spaces = border + curr_row_start - field_caret.caret_position - tags_shift;
+		if (n_of_spaces > 0) insert_tag(field_caret.txt_field, " ".repeat(n_of_spaces ), field_caret.caret_position);
+		}
+
+
+	function delete_spaces() {
+		field_caret = get_field_and_caret_position();
+		trimmed_txt = field_caret.txt_field.value.slice(0, caret_position).trimRight()
+		new_caret_position = caret_position - (caret_position - trimmed_txt.length)
+		field_caret.txt_field.value = trimmed_txt + txt_field.value.slice(caret_position);
+		txt_field.setSelectionRange(new_caret_position, new_caret_position);
+		}
+
+
+	bold_button = document.getElementById("b");
+	bold_button.addEventListener("click", () => { make_it_pretty("<b>", "</b>"); }, false);
+
+	italic_button = document.getElementById("i");
+	italic_button.addEventListener("click", () => { make_it_pretty("<i>", "</i>"); }, false);
+
+	td_button = document.getElementById("td");
+	td_button.addEventListener("click", () => { make_it_pretty("<td>", "</td>"); }, false);
+
+	tr_button = document.getElementById("tr");
+	tr_button.addEventListener("click", () => { make_it_pretty("<tr>", "</tr>\n    "); }, false);
+
+	table_button = document.getElementById("table");
+	table_button.addEventListener("click", () => { make_block("<table>\n    <tr>\n</table>\n\n", -11); }, false);
+
+	pre_button = document.getElementById("pre");
+	pre_button.addEventListener("click", () => { make_block("> <pre>\n\n> </pre>\n\n", -11); }, false);
+
+	br_button = document.getElementById("br");
+	br_button.addEventListener("click", () => {  make_it_pretty("<br>\n"); }, false);
+
+	shift_button = document.getElementById("shift");
+	shift_button.addEventListener("click", till_border, false);
+
+	trim_button = document.getElementById("trim");
+	trim_button.addEventListener("click", delete_spaces, false);
+
+
+	let alt_flag = false;
+	document.addEventListener("keydown", function(event) {
+		//alert(event.code)
+		if (event.code == "Tab") {
+			make_it_pretty(" ".repeat(4));
+			event.preventDefault();
+			}
+		if (event.code == "AltRight") alt_flag = true;
+		if (alt_flag) {
+			if (event.code == "Enter") {
+				alt_flag = false;
+				make_it_pretty("<br>\n");
+				}
+			if (event.code == "KeyB") {
+				alt_flag = false;
+				make_it_pretty("<b>", "</b>");
+				}
+			if (event.code == "KeyI") {
+				alt_flag = false;
+				make_it_pretty("<i>", "</i>");
+				}
+			if (event.code == "KeyT") {
+				alt_flag = false;
+				make_block("<table>\n    <tr>\n</table>\n\n", -11);
+				}
+			if (event.code == "KeyC") {
+				alt_flag = false;
+				make_it_pretty("<td>", "</td>");
+				}
+			if (event.code == "KeyR") {
+				alt_flag = false;
+				make_it_pretty("<tr>", "</tr>\n    ");
+				}
+			if (event.code == "KeyP") {
+				alt_flag = false;
+				make_block("> <pre>\n\n> </pre>\n\n", -11);
+				}
+			if (event.code == "Period") {
+				alt_flag = false;
+				till_border();
+				}
+			if (event.code == "Comma") {
+				alt_flag = false;
+				delete_spaces();
+				}
+			}
+		}
+	);
+</script>

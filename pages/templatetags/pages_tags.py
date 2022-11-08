@@ -2,7 +2,6 @@ from django import template
 from django.utils.safestring import mark_safe
 import markdown
 
-from ..models import Page, Theme, Discipline
 from ..forms import SearchForm
 
 register = template.Library()
@@ -34,3 +33,11 @@ def search_field(curr_object):
 		discipline = curr_object.discipline_parent
 	form = SearchForm(initial={'discipline': discipline})
 	return {'form': form, 'discipline': discipline }
+
+@register.inclusion_tag('pages/additional/tag_buttons.html')
+def tag_buttons():
+	return None
+
+@register.inclusion_tag('pages/additional/management_buttons.html')
+def management_buttons(scenario):
+	return {'scenario': scenario}

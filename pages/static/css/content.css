@@ -90,3 +90,19 @@ p.description {
 	margin-left: 2em;
 	position: static;
 }
+
+#tag_buttons {
+	width: 10%;
+	position: absolute;
+	top: 50%;
+	right: 2px;
+}
+
+#tag_buttons input[type=button] {
+    width: auto;
+}
+
+#tag_buttons input[type=text] {
+    width: 30px;
+    background-color: white;
+}
