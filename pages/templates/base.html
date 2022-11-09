@@ -18,10 +18,10 @@
 		<h2>A way to keep your coding knowledge at the same place.</h2>
 		
 		{% if object %}{% search_field object %}{% navigation object %}{% endif %}
+
 		<div id="registration">
 			{% if request.user.is_authenticated %}
 				<p>Hello, <em>{{ request.user.username }}</em>!</p>
-				<!-- <a href="{% url 'logout' %}?next={{ request.path }}">Sign out</a> -->
 				<a href="{% url 'logout' %}?next={% if object %}{{ object.get_absolute_url }}{% else %}
 					{% url 'pages:disciplines_list' %}{% endif %}">Sign out</a>
 			{% else %}
@@ -54,25 +54,7 @@
 				{% endfor %}
 			{% endif %}
 			{% if request.user.is_authenticated %}
-				{% if object %}
-					{% with object|model_name as class %}
-						{% if class != 'page' %}
-							<a class="undecorated" href="{% url 'pages:new_content' class_name=class key=object.pk %}">
-								<li class="add"><img src="{% static 'images/icons/small_plus.png' %}"></li>
-							</a>
-						{% else %}
-							{% with object.content_object|model_name as parent_class %}
-								<a class="undecorated" href="{% url 'pages:new_content' class_name=parent_class key=object.content_object.pk %}">
-									<li class="add"><img src="{% static 'images/icons/small_plus.png' %}"></li>
-								</a>
-							{% endwith %}
-						{% endif %}
-					{% endwith %}
-				{% else %}
-					<a class="undecorated" href="{% url 'pages:discipline_create' %}">
-						<li class="add"><img src="{% static 'images/icons/small_plus.png' %}"></li>
-					</a>
-				{% endif %}
+				{% management_buttons 'sidebar_small_plus' object %}
 			{% endif %}
 		</ul>
 	</div>

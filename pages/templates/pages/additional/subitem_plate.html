@@ -1,0 +1,33 @@
+{% load pages_tags %}
+
+<div id="discipline_content_plate">
+    {% with item|model_name as item_class %}
+        <h2>
+            <a href="{{ item.get_absolute_url }}">{{ item.title }}</a>
+        </h2>
+        {% if item_class == 'theme' %}
+            <p class="description">{{ item.description|truncatewords:15 }}</p>
+            {% with item.pages.all as pages %}
+                <span class="subcontent_list">Pages:</span>
+                {% for page in pages %}
+                    <i><a href="{{ page.get_absolute_url }}">{{ page.title }}</a></i>
+                    {% if not forloop.last %},{% endif %}
+                {% endfor %}
+            {% endwith %}
+            <br>
+            {% with item.subthemes.all as subthemes %}
+                <span class="subcontent_list">Subthemes:</span>
+                {% for theme in subthemes %}
+                    <i><a href="{{ theme.get_absolute_url }}">{{ theme.title }}</a></i>
+                    {% if not forloop.last %},{% endif %}
+                {% endfor %}
+            {% endwith %}
+        {% else %}
+            <div class="page_content">{{ item.content|markdown|truncatechars_html:400 }}</div>
+        {% endif %}
+
+        {% if request.user.is_authenticated %}
+            {% management_buttons 'subitem_edit' item item_class %}
+        {% endif %}
+    {% endwith %}
+</div>

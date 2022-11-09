@@ -5,30 +5,16 @@
 {% block content %}
 	<div id="content">
 		<div class="discipline_description">
-			<h1>{{ page }}:</h1>
+			<h1>{{ object }}:</h1>
 			{% if request.user.is_authenticated %}
-				<ul class="buttons_list">
-					<li><a class="undecorated" href="{% url 'pages:page_edit' page.pk %}">
-							<img src="{% static 'images/icons/edit_button.png' %}">
-						</a>
-					</li>
-					<li><a class="undecorated" href="{% url 'pages:page_delete' page.pk %}">
-							<img src="{% static 'images/icons/delete_button.png' %}">
-						</a>
-					</li>
-				</ul>
+				{% management_buttons 'content_edit' object %}
 			{% endif %}
 			<hr>
 		</div>
 		
 		{{ page.content|markdown }}
 		{% if request.user.is_authenticated %}
-			<div id="add_new">
-				<a class="undecorated" href="{% url 'pages:page_edit' page.pk %}">
-					<img src="{% static 'images/icons/edit_button.png' %}">
-					<p><i>Edit page</i></p>
-				</a>
-			</div>
+			{% management_buttons 'edit_button' object %}
 		{% endif %}
 		
 	</div>

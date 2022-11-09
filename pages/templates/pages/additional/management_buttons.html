@@ -1,4 +1,5 @@
 {% load static %}
+{% load pages_tags %}
 
 {% if scenario == 'new_discipline_big_plus' %}
     <div id="add_new">
@@ -7,4 +8,70 @@
             <p><i>Add new discipline</i></p>
         </a>
     </div>
+
+{% elif scenario == 'new_content' %}
+    <div id="add_new">
+        {% with object|model_name as class_name %}
+            <a class="undecorated" href="{% url 'pages:new_content' class_name=class_name key=object.pk %}">
+                <img src="{% static 'images/icons/plus.png' %}">
+                <p><i>Add new content</i></p>
+                </li></a>
+        {% endwith %}
+    </div>
+
+{% elif scenario == 'edit_button' %}
+    <div id="add_new">
+        <a class="undecorated" href="{% url 'pages:page_edit' object.pk %}">
+            <img src="{% static 'images/icons/edit_button.png' %}">
+            <p><i>Edit page</i></p>
+        </a>
+    </div>
+
+{% elif scenario in 'content_edit, subitem_edit' %}
+    {% with object|model_name as item_class %}
+        <ul class="buttons_list">
+            <li>
+                {% if item_class == 'discipline' %} <a class="undecorated" href="{% url 'pages:discipline_edit' object.slug %}">
+                {% elif item_class == 'theme' %} <a class="undecorated" href="{% url 'pages:theme_edit' object.pk %}">
+                {% else %} <a class="undecorated" href="{% url 'pages:page_edit' object.pk %}">
+                {% endif %}
+                    {% if scenario == 'content_edit' %}
+                        <img src="{% static 'images/icons/edit_button.png' %}">
+                    {% else %}
+                        <img class="small" src="{% static 'images/icons/edit2.png' %}">
+                    {% endif %}
+                </a>
+            </li>
+            <li>
+                {% if item_class == 'discipline' %} <a class="undecorated" href="{% url 'pages:discipline_delete' object.pk %}">
+                {% elif item_class == 'theme' %} <a class="undecorated" href="{% url 'pages:theme_delete' object.pk %}">
+                {% else %} <a class="undecorated" href="{% url 'pages:page_delete' object.pk %}">
+                {% endif %}
+                    {% if scenario == 'content_edit' %}
+                        <img src="{% static 'images/icons/delete_button.png' %}">
+                    {% else %}
+                        <img class="small" src="{% static 'images/icons/delete2.png' %}">
+                    {% endif %}
+                </a>
+            </li>
+        </ul>
+    {% endwith %}
+
+{% elif scenario == 'sidebar_small_plus' %}
+    {% if object %}
+        {% with object|model_name as class %}
+            {% if class != 'page' %}
+                <a class="undecorated" href="{% url 'pages:new_content' class_name=class key=object.pk %}">
+            {% else %}
+                {% with object.content_object|model_name as parent_class %}
+                    <a class="undecorated" href="{% url 'pages:new_content' class_name=parent_class key=object.content_object.pk %}">
+                {% endwith %}
+            {% endif %}
+        {% endwith %}
+    {% else %}
+        <a class="undecorated" href="{% url 'pages:discipline_create' %}">
+    {% endif %}
+            <li class="add"><img src="{% static 'images/icons/small_plus.png' %}"></li>
+        </a>
+
 {% endif %}

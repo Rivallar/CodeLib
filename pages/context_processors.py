@@ -34,6 +34,11 @@ def uri_path(request):
 			path = request.GET['next'].strip('/').split('/')
 		except MultiValueDictKeyError:
 			pass
+
+	#sidebar for /search/ remains same as it was before search
+	if 'search' in path:
+		path = request.META['HTTP_REFERER'].strip('/').split('/')[-2:]
+
 	path_set = set(path)
 
 	# no context for admin
