@@ -106,3 +106,17 @@ p.description {
     width: 30px;
     background-color: white;
 }
+
+/* table with borders */
+table.with_border {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.with_border tr td, th {
+   border: 1px solid grey;
+}
+
+table.with_border tr td:nth-child(3) {
+     text-align: center;
+}

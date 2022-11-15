@@ -39,8 +39,9 @@ def search_field(curr_object):
 		discipline = curr_object.title
 	else:
 		discipline = curr_object.discipline_parent
-	form = SearchForm(initial={'discipline': discipline})
-	return {'form': form, 'discipline': discipline}
+	obj_path = curr_object.get_absolute_url()
+	form = SearchForm(initial={'discipline': discipline, 'obj_path': obj_path})
+	return {'form': form}
 
 
 @register.inclusion_tag('pages/additional/subitem_plate.html')

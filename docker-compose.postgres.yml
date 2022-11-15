@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+  app:
+    depends_on:
+      - db
+  db:
+    image: postgres
+    volumes:
+      - ./data/postgres/db/:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: "postgres"
+      POSTGRES_USER: 'post_user'
+      POSTGRES_PASSWORD: "post_password"
+    container_name: postgres_db

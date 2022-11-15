@@ -1,6 +1,7 @@
 from django.utils.datastructures import MultiValueDictKeyError
 
 from .models import Discipline, Theme, Page
+from .forms import SearchForm
 
 
 def uri_path(request):
@@ -35,9 +36,11 @@ def uri_path(request):
 		except MultiValueDictKeyError:
 			pass
 
-	#sidebar for /search/ remains same as it was before search
+	#sidebar for /search/ is taken from hidden field in a form (remains same as it was before search)
 	if 'search' in path:
-		path = request.META['HTTP_REFERER'].strip('/').split('/')[-2:]
+		form = SearchForm(request.POST)
+		if form.is_valid():
+			path = form.cleaned_data['obj_path'].strip('/').split('/')[-2:]
 
 	path_set = set(path)
 

@@ -23,7 +23,11 @@
                 {% endfor %}
             {% endwith %}
         {% else %}
-            <div class="page_content">{{ item.content|markdown|truncatechars_html:400 }}</div>
+            {% if item.headline %}
+                <div class="page_content">{{ item.headline|markdown|truncatechars_html:400 }}</div>
+            {% else %}
+                <div class="page_content">{{ item.content|markdown|truncatechars_html:400 }}</div>
+            {% endif %}
         {% endif %}
 
         {% if request.user.is_authenticated %}

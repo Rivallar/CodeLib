@@ -4,13 +4,14 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.contenttypes.models import ContentType
-# from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank, SearchHeadline
+from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank, SearchHeadline
 from django.views.decorators.http import require_POST
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.urls import reverse_lazy
 from .models import Discipline, Theme, Page, GeneralContent
 from .forms import CreatePageForm, ContentTypeForm, SearchForm
+from codelib.settings import DATABASES
 
 
 # Create your views here.
@@ -101,7 +102,7 @@ def add_new_content(request, class_name, key):
 
 		if form.is_valid():
 			cd = form.cleaned_data
-			if len(cd['parent'].path.split('/')) == 1:	#parent is discipline
+			if len(cd['parent'].path.split('/')) == 1:  # parent is discipline
 				content_type = ContentType.objects.get(model='discipline')
 				object_id = cd['parent'].discipline.pk
 			else:
@@ -139,16 +140,41 @@ def search_content(request):
 	form = SearchForm(request.POST)
 	if form.is_valid():
 		cd = form.cleaned_data
-		query = cd['search']
-		all_themes = Theme.objects.filter(discipline_parent=cd['discipline'])
-		all_pages = Page.objects.filter(discipline_parent=cd['discipline'])
-		result = set(all_themes.filter(title__icontains=query)) | set(all_themes.filter(description__icontains=query)) | \
-			set(all_pages.filter(title__icontains=query)) | set(all_pages.filter(content__icontains=query))
 
+		obj_path = cd['obj_path'].strip('/').split('/')[-2:]
+		if obj_path[0] == 'discipline':
+			obj = Discipline.objects.get(slug=obj_path[-1])
+		elif obj_path[0] == 'theme':
+			obj = Theme.objects.get(id=obj_path[-1])
+		else:
+			obj = Page.objects.get(id=obj_path[-1])
+
+		# MySQL search
+		if DATABASES['default']['ENGINE'] == 'django.db.backends.mysql':
+			query = cd['search']
+			all_themes = Theme.objects.filter(discipline_parent=cd['discipline'])
+			all_pages = Page.objects.filter(discipline_parent=cd['discipline'])
+			result = set(all_themes.filter(title__icontains=query)) | set(all_themes.filter(description__icontains=query)) | \
+				set(all_pages.filter(title__icontains=query)) | set(all_pages.filter(content__icontains=query))
+
+		# advanced Postgres search
+		else:
+			query = SearchQuery(f"{cd['search']}:*", search_type="raw")
+
+			page_vector = SearchVector('title', weight='A') + SearchVector('content', weight='B')
+			page_headline = SearchHeadline('content', query, start_sel='<span class="highlight">', stop_sel='</span>')
+			theme_vector = SearchVector('title', weight='A') + SearchVector('description', weight='C')
+			# theme_headline = SearchHeadline('description', query, start_sel='<span class="highlight">', stop_sel='</span>')
+
+			result = list(Theme.objects.filter(discipline_parent=cd['discipline']).
+						annotate(rank=SearchRank(theme_vector, query)).filter(rank__gte=0.001).order_by('-rank'))
+			result += list(Page.objects.filter(discipline_parent=cd['discipline']).
+						annotate(rank=SearchRank(page_vector, query)).annotate(headline=page_headline).
+						filter(rank__gte=0.001).order_by('-rank'))
+			result.sort(key=lambda x: x.rank, reverse=True)
 		
-		discipline = Discipline.objects.get(title=cd['discipline'])
-		content = list(discipline.themes.all()) + list(discipline.pages.all())
-		content.sort(key=lambda x: x.title)
-		
-	return render(request, 'pages/content/search_result.html', {'result': result,
-		'object_list': content, 'sidebar_title': discipline.title, 'object': discipline, 'search_phrase': cd['search']})
+	return render(request, 'pages/content/search_result.html', {'result': result, 'object': obj, 'search_phrase': cd['search']})
+
+
+
+

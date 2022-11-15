@@ -1,6 +1,7 @@
 <div id="tag_buttons">
 	<input type="button" value="<b>" id="b">
 	<input type="button" value="<i>" id="i">
+	<input type="button" value="<u>" id="u">
 	<input type="button" value="<br>" id="br">
 	<br>
 	<input type="button" value="<table>" id="table">
@@ -101,7 +102,7 @@
 			tags_shift = actual_rowlen - btwn_rowstart_and_caret_str.length
 			}
 
-		n_of_spaces = border + curr_row_start - field_caret.caret_position - tags_shift;
+		n_of_spaces = border + curr_row_start - field_caret.caret_position + tags_shift;
 		if (n_of_spaces > 0) insert_tag(field_caret.txt_field, " ".repeat(n_of_spaces ), field_caret.caret_position);
 		}
 
@@ -120,6 +121,9 @@
 
 	italic_button = document.getElementById("i");
 	italic_button.addEventListener("click", () => { make_it_pretty("<i>", "</i>"); }, false);
+
+	underline_button = document.getElementById("u");
+	underline_button.addEventListener("click", () => { make_it_pretty("<u>", "</u>"); }, false);
 
 	td_button = document.getElementById("td");
 	td_button.addEventListener("click", () => { make_it_pretty("<td>", "</td>"); }, false);
@@ -164,6 +168,10 @@
 				alt_flag = false;
 				make_it_pretty("<i>", "</i>");
 				}
+			if (event.code == "KeyU") {
+				alt_flag = false;
+				make_it_pretty("<u>", "</u>");
+				}
 			if (event.code == "KeyT") {
 				alt_flag = false;
 				make_block("<table>\n    <tr>\n</table>\n\n", -11);
@@ -177,6 +185,7 @@
 				make_it_pretty("<tr>", "</tr>\n    ");
 				}
 			if (event.code == "KeyP") {
+				event.preventDefault();
 				alt_flag = false;
 				make_block("> <pre>\n\n> </pre>\n\n", -11);
 				}

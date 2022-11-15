@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 from pathlib import Path
 import os
 
-from .security import S_SECRET_KEY, S_DATABASES
+from .security import S_SECRET_KEY, S_DATABASES, P_DATABASES
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -35,6 +35,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
 	'pages',
+    'django.contrib.postgres',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -81,22 +82,6 @@ WSGI_APPLICATION = 'codelib.wsgi.application'
 
 DATABASES = S_DATABASES
 
-"""
-DATABASES = {
-	'default': {
-		'ENGINE': 'django.db.backends.mysql',
-		'NAME': 'codelib-app-db',
-		'USER': 'root',
-		'PASSWORD': S_DB_PASSWORD,
-		'HOST': 'db',
-		'PORT': 3306,
-		'OPTIONS': {
-			'sql_mode': 'traditional',
-			'charset': 'utf8mb4'
-			}
-		}
-	}
-"""
 
 
 # Password validation

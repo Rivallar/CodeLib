@@ -1,16 +1,5 @@
 version: '3.8'
 services:
-  db:
-    image: mysql:8
-    environment:
-      MYSQL_DATABASE: 'codelib-app-db'
-      MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
-    volumes:
-      - ./data/mysql/db:/var/lib/mysql
-    healthcheck:
-      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
-      timeout: 20s
-      retries: 10
   app:
     build: .
     volumes:
@@ -20,6 +9,3 @@ services:
     image: app:codelib_app
     container_name: codelib_app_container
     command: python manage.py runserver 0.0.0.0:8000
-    depends_on:
-      db:
-        condition: service_healthy

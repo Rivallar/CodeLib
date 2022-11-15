@@ -27,6 +27,7 @@ class ContentTypeForm(forms.Form):
 
 class SearchForm(forms.Form):
 	search = forms.CharField(max_length=50)
-	discipline = forms.CharField(widget=forms.HiddenInput)	
+	discipline = forms.CharField(widget=forms.HiddenInput)
+	obj_path = forms.CharField(widget=forms.HiddenInput)
 	
 	
