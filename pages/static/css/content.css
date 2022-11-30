@@ -117,6 +117,3 @@ table.with_border tr td, th {
    border: 1px solid grey;
 }
 
-table.with_border tr td:nth-child(3) {
-     text-align: center;
-}

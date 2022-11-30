@@ -19,7 +19,11 @@ class Command(BaseCommand):
 					item.object_id = themes_dict[path[-1].lower()]
 				item.save()
 			except KeyError:
-				print(f'Some problems with item {item.title}')
+				print(f'Some problems with item {item}. No parent found. Probably something with paths.')
+			except AttributeError:
+				print(f'Still not investigated attribute_exception with item {item}')
+			except:
+				print(f'Unknown exception with item {item}')
 
 	def handle(self, *args, **options):
 		content_discipline = ContentType.objects.get(model='discipline')
