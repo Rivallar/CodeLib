@@ -30,3 +30,11 @@ It has no user-registration system (you have to manage users from admin-site) an
 for one-person usage (maybe I shall fix it later). Also I did not waste a lot of time on its
 visual design.<br>
 But it does what it is designed to do and that`s fine for me!
+
+### Screens:
+
+![Main_page](https://github.com/Rivallar/CodeLib/blob/main/Screens/main.PNG)
+![Page](https://github.com/Rivallar/CodeLib/blob/main/Screens/page.PNG)
+![edit](https://github.com/Rivallar/CodeLib/blob/main/Screens/edit.PNG)
+![Search](https://github.com/Rivallar/CodeLib/blob/main/Screens/search.PNG)
+
