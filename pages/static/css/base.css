@@ -144,6 +144,20 @@ a.undecorated {
 	padding-top: 10px;
 	}
 
+#hide_comments {
+	position: fixed;
+	width: 125px;
+	height: 125px;
+	top: 50%;
+	right: 50px;
+	text-align: center;
+}
+
+#hide_comments img {
+	width: 100px;
+	height: 100px;
+	padding-top: 5px;
+	}
 
 
 

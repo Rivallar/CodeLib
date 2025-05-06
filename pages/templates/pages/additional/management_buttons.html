@@ -27,6 +27,11 @@
         </a>
     </div>
 
+{% elif scenario == 'hide_comments' %}
+    <div id="hide_comments">
+        <img src="{% static 'images/icons/no_comment.png' %}">
+    </div>
+
 {% elif scenario in 'content_edit, subitem_edit' %}
     {% with object|model_name as item_class %}
         <ul class="buttons_list">
@@ -75,3 +80,35 @@
         </a>
 
 {% endif %}
+
+<script>
+    function hide_comments() {
+        code_indicator = 'pre'
+        comment_indicator = '   - '
+        code_tags = document.getElementsByTagName(code_indicator);
+        for (var i = 0; i < code_tags.length; i++) {
+            code_as_text = code_tags[i].innerText
+            rows = code_as_text.split('\n')
+            for (var k = 0; k < rows.length; k++) {
+                comment_position = rows[k].indexOf(comment_indicator)
+                if ( comment_position > 0 ){
+                    uncommented_row = rows[k].slice(0, comment_position)
+                    trimmed_row = uncommented_row.trimRight()
+                    rows[k] = trimmed_row
+                    }
+                }
+            whole_text = rows.join('\n')
+            code_tags[i].innerText = whole_text
+            }
+        
+        // Remove the div element after hiding comments
+        hide_comments_div = document.getElementById("hide_comments");
+        hide_comments_div.remove();
+    }
+    
+    // Add event listener when the DOM is fully loaded
+    document.addEventListener("DOMContentLoaded", function() {
+        hide_comments_div = document.getElementById("hide_comments");
+        hide_comments_div.addEventListener("click", hide_comments, false);
+    });
+</script>

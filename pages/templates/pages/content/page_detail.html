@@ -13,6 +13,7 @@
 		</div>
 		
 		{{ page.content|markdown }}
+		{% management_buttons 'hide_comments' object %}
 		{% if request.user.is_authenticated %}
 			{% management_buttons 'edit_button' object %}
 		{% endif %}
