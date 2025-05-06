@@ -29,7 +29,9 @@
 
 {% elif scenario == 'hide_comments' %}
     <div id="hide_comments">
-        <img src="{% static 'images/icons/no_comment.png' %}">
+        <a href="#">
+            <img src="{% static 'images/icons/no_comment.png' %}">
+        </a>
     </div>
 
 {% elif scenario in 'content_edit, subitem_edit' %}
