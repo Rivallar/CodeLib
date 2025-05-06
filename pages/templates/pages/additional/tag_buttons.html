@@ -20,9 +20,11 @@
 		txt_field = document.getElementById("id_content");
 		txt_field.focus();
 		caret_position = txt_field.selectionStart;
+		caret_end_position = txt_field.selectionEnd;
 		return {
 			txt_field: txt_field,
-			caret_position: caret_position
+			caret_position: caret_position,
+			caret_end_position: caret_end_position
 			}
 		}
 
@@ -46,6 +48,13 @@
 			insert_tag(field_caret.txt_field, opener, field_caret.caret_position);
 			return;
 			}
+		
+		if (field_caret.caret_position != field_caret.caret_end_position) {
+			insert_tag(field_caret.txt_field, opener, field_caret.caret_position);
+			opener_shift = opener.length
+			insert_tag(field_caret.txt_field, closer, field_caret.caret_end_position + opener_shift);
+			return;
+		}
 
 		opener_index = find_last_index(field_caret.txt_field, opener, field_caret.caret_position);
 		if (opener_index == -1) {
