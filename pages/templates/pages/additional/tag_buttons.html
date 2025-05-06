@@ -78,6 +78,25 @@
 		insert_tag(field_caret.txt_field, tag, field_caret.caret_position, shift);
 		}
 
+		
+	function wrap_in_table(field_caret) {
+		new_table = "\n\n<table>\n    "
+		text_to_wrap = field_caret.txt_field.value.slice(field_caret.caret_position, field_caret.caret_end_position)
+		rows_to_wrap = text_to_wrap.split('\n')
+		for (var i in rows_to_wrap) {
+			delimiter = ' - '
+			delimiter_index = rows_to_wrap[i].indexOf(delimiter)
+			if (delimiter_index < 0) {
+				alert("Impossible to make a table")
+				return
+			}
+			new_row = "<tr><td>" + rows_to_wrap[i].slice(0, delimiter_index) + "</td>          <td>" + rows_to_wrap[i].slice(delimiter_index) + "</td></tr>\n    "
+			new_table += new_row
+		}
+		new_table += "</table>\n\n"
+		field_caret.txt_field.value = txt_field.value.slice(0, field_caret.caret_position) + new_table + txt_field.value.slice(field_caret.caret_end_position);
+	}
+
 
 	function insert_spaces(tag) {
 		field_caret = get_field_and_caret_position();
@@ -183,7 +202,12 @@
 				}
 			if (event.code == "KeyT") {
 				alt_flag = false;
-				make_block("<table>\n    <tr>\n</table>\n\n", -11);
+				field_caret = get_field_and_caret_position();
+				if (field_caret.caret_position != field_caret.caret_end_position) {
+					wrap_in_table(field_caret)
+				} else { 
+					make_block("<table>\n    <tr>\n</table>\n\n", -11); 
+					}
 				}
 			if (event.code == "KeyC") {
 				alt_flag = false;
