@@ -13,6 +13,7 @@
 	<input type="text" value="60" id="shift_value">
 	<input type="button" value="shift" id="shift">
 	<input type="button" value="trim" id="trim">
+	<input type="button" value="auto allign" id="allign">
 </div>
 
 <script>
@@ -78,7 +79,7 @@
 		insert_tag(field_caret.txt_field, tag, field_caret.caret_position, shift);
 		}
 
-		
+
 	function wrap_in_table(field_caret) {
 		new_table = "\n\n<table>\n    "
 		text_to_wrap = field_caret.txt_field.value.slice(field_caret.caret_position, field_caret.caret_end_position)
@@ -143,6 +144,50 @@
 		txt_field.setSelectionRange(new_caret_position, new_caret_position);
 		}
 
+	
+	function auto_allign() {
+		border_field = document.getElementById("shift_value");
+		border = parseInt(border_field.value);
+		txt_field = document.getElementById("id_content").value;
+		in_code_flag = false;
+		text_rows = txt_field.split('\n')
+		for (var i in text_rows) {
+			if (in_code_flag) {
+				if (text_rows[i].indexOf("</pre>") >= 0) {
+					in_code_flag = false;
+					alert("setting flag to false")
+					continue;
+				} else {
+					text_rows[i] = text_rows[i].replaceAll("\t", "    ")
+					comment_start_index = text_rows[i].indexOf("  - ")
+					if (comment_start_index > 0) {
+						code = text_rows[i].slice(0, comment_start_index).trimRight();
+						comment = text_rows[i].slice(comment_start_index).trim();
+
+						code_length = code.length
+						possible_tags = ["<br>", "<b>", "</b>", "<i>", "</i>", "<u>", "</u>"]
+						code_without_tags = code.slice()
+						for (var k in possible_tags) {
+							code_without_tags = code_without_tags.replaceAll(possible_tags[k], '');
+						}
+						n_of_spaces = border - code_without_tags.length
+						text_rows[i] = code + " ".repeat(n_of_spaces) + comment
+					}
+						}
+			}
+			else
+				{ 
+					if (text_rows[i].indexOf("<pre>") >= 0) {
+						in_code_flag = true;
+						alert("setting flag to true")
+						continue;
+					}
+				}
+
+		}
+		document.getElementById("id_content").value = text_rows.join('\n')
+	}
+
 
 	bold_button = document.getElementById("b");
 	bold_button.addEventListener("click", () => { make_it_pretty("<b>", "</b>"); }, false);
@@ -173,6 +218,9 @@
 
 	trim_button = document.getElementById("trim");
 	trim_button.addEventListener("click", delete_spaces, false);
+
+	allign_button = document.getElementById("allign");
+	allign_button.addEventListener("click", auto_allign, false);
 
 
 	let alt_flag = false;
