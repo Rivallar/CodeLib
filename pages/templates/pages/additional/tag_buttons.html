@@ -49,7 +49,7 @@
 			insert_tag(field_caret.txt_field, opener, field_caret.caret_position);
 			return;
 			}
-		
+
 		if (field_caret.caret_position != field_caret.caret_end_position) {
 			insert_tag(field_caret.txt_field, opener, field_caret.caret_position);
 			opener_shift = opener.length
@@ -144,7 +144,7 @@
 		txt_field.setSelectionRange(new_caret_position, new_caret_position);
 		}
 
-	
+
 	function auto_allign() {
 		border_field = document.getElementById("shift_value");
 		border = parseInt(border_field.value);
@@ -155,7 +155,6 @@
 			if (in_code_flag) {
 				if (text_rows[i].indexOf("</pre>") >= 0) {
 					in_code_flag = false;
-					alert("setting flag to false")
 					continue;
 				} else {
 					text_rows[i] = text_rows[i].replaceAll("\t", "    ")
@@ -176,10 +175,9 @@
 						}
 			}
 			else
-				{ 
+				{
 					if (text_rows[i].indexOf("<pre>") >= 0) {
 						in_code_flag = true;
-						alert("setting flag to true")
 						continue;
 					}
 				}
@@ -253,8 +251,8 @@
 				field_caret = get_field_and_caret_position();
 				if (field_caret.caret_position != field_caret.caret_end_position) {
 					wrap_in_table(field_caret)
-				} else { 
-					make_block("<table>\n    <tr>\n</table>\n\n", -11); 
+				} else {
+					make_block("<table>\n    <tr>\n</table>\n\n", -11);
 					}
 				}
 			if (event.code == "KeyC") {
